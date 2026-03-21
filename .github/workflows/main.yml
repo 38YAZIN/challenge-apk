@@ -7,7 +7,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build APK with Docker
-        uses: docker://ghcr.io/kivy/buildozer:master
+        uses: docker://ghcr.io/kivy/buildozer:latest
         with:
           args: android debug
         env:
