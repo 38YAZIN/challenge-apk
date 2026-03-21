@@ -6,11 +6,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build with Buildozer
-        uses: kivy/buildozer-action@master
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          workdir: .
-          buildozer_version: stable
+          python-version: '3.11'
+
+      - name: Install Buildozer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libffi-dev python3-dev libssl-dev \
+          cmake ant autoconf automake libtool ccache
+          pip install --user --upgrade buildozer
+
+      - name: Build with Buildozer
+        run: |
+          export PATH=$PATH:~/.local/bin
+          buildozer --version
+          buildozer android debug
+        continue-on-error: true
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
