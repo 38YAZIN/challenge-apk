@@ -18,12 +18,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential libffi-dev python3-dev libssl-dev \
           cmake ant autoconf automake libtool ccache
-          pip install --user --upgrade buildozer cython==0.29.33
+          pip install --user --upgrade "buildozer>=1.5.0" "cython<3.0"
 
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:~/.local/bin
-          # قبول التراخيص تلقائياً (مهم جداً)
+          # إجبار السيرفر على استخدام نسخ متوافقة
+          export ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME
+          export JAVA_HOME=$JAVA_HOME_17_X64
+          
+          # تنظيف وبناء
+          buildozer android clean
           yes | buildozer android debug
         continue-on-error: false
 
