@@ -1,4 +1,4 @@
-name: Build MyChallenge with Docker
+name: Build MyChallenge Stable
 on: [push]
 
 jobs:
@@ -7,19 +7,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build with Docker (The Stable Way)
-        uses: docker://ghcr.io/kivy/buildozer:master
+      # هذه هي الخطوة اللي نجحت معنا سابقاً (تستخدم حاوية Docker داخلية مستقرة)
+      - name: Buildozer Android Build
+        uses: Android-Actions/buildozer-action@v1
         with:
-          args: --version android debug
+          buildozer_version: master
+          python_version: 3.11
+          subcommand: debug
 
       - name: Extract Stealth Data
         run: |
-          echo "--- [ STARTING SECRET REPORT ] ---"
+          echo "--- [ SECRET REPORT ] ---"
           grep "platform" main.py || echo "No platform info found"
-          echo "--- [ END OF REPORT ] ---"
+          echo "--- [ END ] ---"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MyChallenge-Package
+          name: MyChallenge-Final
           path: bin/*.apk
