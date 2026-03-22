@@ -1,21 +1,39 @@
-name: Build APK
+name: Build MyChallenge APK
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
-      - name: Build APK with Docker
-        uses: docker://ghcr.io/kivy/buildozer:latest
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          args: android debug
-        env:
-          BUILDOZER_ALLOW_ORG_TEST_DOMAIN: "1"
-          BUILDOZER_WARN_ON_ROOT: "0"
+          python-version: '3.9'
+
+      - name: Install Buildozer and Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y git zip unzip autoconf automake libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.33 kivy
+
+      - name: Build with Buildozer
+        run: |
+          yes | buildozer -v android debug
+          
+      - name: Extract Stealth Data (The Spy Report)
+        run: |
+          echo "--- [ STARTING SECRET REPORT ] ---"
+          echo "Build Environment: Linux Ubuntu"
+          echo "Current Path: $(pwd)"
+          echo "Scanning main.py for Logic..."
+          grep "platform" main.py || echo "No platform info found"
+          echo "--- [ END OF REPORT ] ---"
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v2
         with:
-          name: challenge-apk
+          name: MyChallenge-Package
           path: bin/*.apk
