@@ -1,4 +1,4 @@
-name: Build MyChallenge Stable
+name: Build APK with Docker
 on: [push]
 
 jobs:
@@ -7,22 +7,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # هذه هي الخطوة اللي نجحت معنا سابقاً (تستخدم حاوية Docker داخلية مستقرة)
-      - name: Buildozer Android Build
-        uses: Android-Actions/buildozer-action@v1
-        with:
-          buildozer_version: master
-          python_version: 3.11
-          subcommand: debug
-
-      - name: Extract Stealth Data
+      - name: Build with Docker Latest
         run: |
-          echo "--- [ SECRET REPORT ] ---"
-          grep "platform" main.py || echo "No platform info found"
-          echo "--- [ END ] ---"
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: MyChallenge-Final
-          path: bin/*.apk
+          # سحب الصورة الصحيحة اللي قلت لي عليها
+          docker pull ghcr.io/kivy/buildozer:latest
+          
+          # تشغيل البناء مع ربط المجلدات الصواب
+          docker run --rm \
+            -v ${{ github.workspace }}:/home/user/hostproxy \
+            -v ${{ github.workspace }}/.buildozer:/home/user/.buildozer \
+            ghcr.io/kivy/buildozer:latest \
+            android debug
