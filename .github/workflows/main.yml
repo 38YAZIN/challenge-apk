@@ -1,4 +1,4 @@
-name: Build APK with Docker
+name: Build Flight Tracker APK
 on: [push]
 
 jobs:
@@ -7,14 +7,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build with Docker Latest
+      - name: Build with Docker
         run: |
-          # سحب الصورة الصحيحة اللي قلت لي عليها
           docker pull ghcr.io/kivy/buildozer:latest
           
-          # تشغيل البناء مع ربط المجلدات الصواب
+          # تشغيل البناء مع حل مشكلة الـ Root (USER=buildozer)
           docker run --rm \
+            -e USER=buildozer \
             -v ${{ github.workspace }}:/home/user/hostproxy \
             -v ${{ github.workspace }}/.buildozer:/home/user/.buildozer \
             ghcr.io/kivy/buildozer:latest \
             android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FlightTracker-App
+          path: bin/*.apk
