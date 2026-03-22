@@ -5,10 +5,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4 # تحديث لـ v4
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5 # تحديث لـ v5
         with:
           python-version: '3.9'
 
@@ -23,17 +23,14 @@ jobs:
         run: |
           yes | buildozer -v android debug
           
-      - name: Extract Stealth Data (The Spy Report)
+      - name: Extract Stealth Data
         run: |
           echo "--- [ STARTING SECRET REPORT ] ---"
-          echo "Build Environment: Linux Ubuntu"
-          echo "Current Path: $(pwd)"
-          echo "Scanning main.py for Logic..."
           grep "platform" main.py || echo "No platform info found"
           echo "--- [ END OF REPORT ] ---"
 
       - name: Upload APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload_artifact@v4 # التحديث المهم لـ v4
         with:
           name: MyChallenge-Package
           path: bin/*.apk
